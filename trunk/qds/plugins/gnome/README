@@ -1,0 +1,4 @@
+Building the GNOME plugin with the QMAKE project file
+depends on pkg-confing knowing the correct flags and directories.
+
+It might be necessary to change src/src.pro to apply for your system.

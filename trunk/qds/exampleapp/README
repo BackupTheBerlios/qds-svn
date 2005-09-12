@@ -1,0 +1,12 @@
+The example application is a simple text editor with network awareness.
+
+Open and Save actions perform QUrlOperator based file access, thus
+enabling the editor to load and save from non-local locations,
+for example a file on an FTP server.
+
+To do this simply insert an FTP directory URL in the directory
+combobox of the Qt file dialog.
+
+When the application has the KDE plugin loaded you can also use
+any of KDE's IO slave protocols, for example sftp or webdav.
+

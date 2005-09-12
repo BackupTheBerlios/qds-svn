@@ -1,0 +1,58 @@
+# Version 0.4.4
+2005-09-10 krake:
+    * Autodetection to use GNOME plugin in case GNOME_DESKTOP_SESSION_ID is set
+    * Replaced the primitive example application with a simple but network
+      aware text editor application
+    * Support for wildcards in mailcap entries
+    
+# Version 0.4.3
+2005-09-02 krake:
+    * First version of GNOME VFS Launcher completed
+    
+2005-09-01 krake:
+    * Started working on a GNOME Launcher based on GNOME VFS
+    
+# Version 0.4.2
+2005-08-27 krake:
+    * Using CFRelease() instead of free() on OS X
+    * Finished first go on the mailcap based launcher, doing a MIME type
+      lookup by file extension in mime.types files when necessary.
+    * Mailcap launcher tries to use $BROWSER when encountering http URLs
+    * API documentation for the main QDS headers
+    
+2005-08-26 krake:
+    * Add convenience functions for simple launching to QDS namespace
+    * Started working on a mailcap based launcher as a fallback on Unix
+    
+# Version 0.4.1
+2005-08-25 krake:
+    * Fixed bug in ChangeLog (wrong year in last entry)
+    * Added code for Launcher on Mac OS X. Might not compile, link or work
+      any help from developers on OS X welcome
+    
+# Version 0.4
+2005-08-24 krake:
+    * Adding Launcher service
+    * Win32 Launcher implemented directly in QDS using ShellExecute
+    * KDE plugin launcher using KRun
+
+# Version 0.3
+2005-08-17 krake:
+    * Determine plugin by one of three methods. When no plugin is specified
+      on commandline check config .qt/qdsrc. If no plugin is specified there
+      either, try autodetection.
+      Autodetection tries to determine if the KDE plugin is suitable by
+      checking for the environment variable KDE_FULL_SESSION and its value
+      being "true"
+
+2005-08-16 krake:
+    * Automake/Autoconf based build for KDE plugin
+    * New example application using QUrlOperator
+
+2005-08-15 krake:
+    * Create new project based on old QDS code. Win32 and MacOSX
+      implementations are basically empty.
+      Use plugins only for Unix, implementations for Win32 and OSX can be
+      done directly, their respective desktop API is always present
+
+# Started new implemention for QDS

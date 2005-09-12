@@ -1,0 +1,67 @@
+[Dir docs]
+Dirs=
+Files=doxygen.conf
+
+[Dir exampleapp]
+Dirs=
+Files=exampleapp.pro/main.cpp/mainwindow.cpp/mainwindow.h
+
+[Dir include]
+Dirs=qds
+Files=template.h
+
+[Dir include/qds]
+Dirs=
+Files=qds.h/servicefactory.h/launcher.h
+
+[Dir lib]
+Dirs=unix/win32/macx
+Files=lib.pro/qds.cpp/servicefactory.cpp/servicefactoryimpl.h
+
+[Dir lib/mac]
+Dirs=
+Files=servicefactoryimpl.cpp
+
+[Dir lib/macx]
+Dirs=
+Files=servicefactoryimpl.cpp/launcher.cpp
+
+[Dir lib/unix]
+Dirs=
+Files=launcher.cpp/servicefactoryimpl.cpp/mailcap.cpp/mailcap.h/mimetypes.cpp/mimetypes.h/mailcaplauncherimpl.cpp/mailcaplauncherimpl.h
+
+[Dir lib/win32]
+Dirs=
+Files=servicefactoryimpl.cpp/launcher.cpp
+
+[Dir plugins]
+Dirs=kde/gnome
+Files=qdsplugin.h/launcherimpl.h
+
+[Dir plugins/gnome]
+Dirs=src
+Files=LICENSE/gnome.pro
+
+[Dir plugins/gnome/src]
+Dirs=
+Files=gnomeinit.cpp/gnomevfslauncherimpl.h/gnomevfslauncherimpl.cpp/src.pro
+
+[Dir plugins/kde]
+Dirs=src
+Files=LICENSE/Makefile.am
+
+[Dir plugins/kde/src]
+Dirs=
+Files=kdeinit.cpp/knetworkprotocol.cpp/knetworkprotocol.h/Makefile.am/klauncherimpl.cpp/klauncherimpl.h
+
+[Dir qdstest]
+Dirs=
+Files=main.cpp/qdstest.pro
+
+[Project Dir]
+Dirs=include/lib/plugins/exampleapp/docs
+Files=qds.pro/AUTHORS/ChangeLog
+
+[Project File]
+Name=QDS
+Type=Default

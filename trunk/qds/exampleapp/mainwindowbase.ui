@@ -1,0 +1,356 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>MainWindowBase</class>
+<widget class="QMainWindow">
+    <property name="name">
+        <cstring>MainWindowBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>QDS Editor Example</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTextEdit">
+            <property name="name">
+                <cstring>m_editor</cstring>
+            </property>
+        </widget>
+    </vbox>
+</widget>
+<menubar>
+    <property name="name">
+        <cstring>MenuBar</cstring>
+    </property>
+    <item text="&amp;File" name="fileMenu">
+        <action name="m_actNew"/>
+        <action name="m_actOpen"/>
+        <action name="m_actSave"/>
+        <action name="m_actSaveAs"/>
+        <separator/>
+        <action name="m_actLaunch"/>
+        <separator/>
+        <separator/>
+        <action name="m_actExit"/>
+    </item>
+    <item text="&amp;Edit" name="editMenu">
+        <action name="m_actUndo"/>
+        <action name="m_actRedo"/>
+        <separator/>
+        <action name="m_actCut"/>
+        <action name="m_actCopy"/>
+        <action name="m_actPaste"/>
+        <separator/>
+    </item>
+</menubar>
+<toolbars>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>toolBar</cstring>
+        </property>
+        <property name="label">
+            <string>Tools</string>
+        </property>
+        <action name="m_actNew"/>
+        <action name="m_actOpen"/>
+        <action name="m_actSave"/>
+        <separator/>
+        <action name="m_actUndo"/>
+        <action name="m_actRedo"/>
+        <separator/>
+        <action name="m_actCut"/>
+        <action name="m_actCopy"/>
+        <action name="m_actPaste"/>
+    </toolbar>
+</toolbars>
+<actions>
+    <action>
+        <property name="name">
+            <cstring>m_actNew</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image0</iconset>
+        </property>
+        <property name="text">
+            <string>New</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;New</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+N</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actOpen</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image1</iconset>
+        </property>
+        <property name="text">
+            <string>Open</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Open...</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+O</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actSave</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image2</iconset>
+        </property>
+        <property name="text">
+            <string>Save</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Save</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+S</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actSaveAs</cstring>
+        </property>
+        <property name="text">
+            <string>Save As</string>
+        </property>
+        <property name="menuText">
+            <string>Save &amp;As...</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actExit</cstring>
+        </property>
+        <property name="text">
+            <string>Exit</string>
+        </property>
+        <property name="menuText">
+            <string>E&amp;xit</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actUndo</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image3</iconset>
+        </property>
+        <property name="text">
+            <string>Undo</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Undo</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Z</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actRedo</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image4</iconset>
+        </property>
+        <property name="text">
+            <string>Redo</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Redo</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Y</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actCut</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image5</iconset>
+        </property>
+        <property name="text">
+            <string>Cut</string>
+        </property>
+        <property name="menuText">
+            <string>Cu&amp;t</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+X</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actCopy</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image6</iconset>
+        </property>
+        <property name="text">
+            <string>Copy</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Copy</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+C</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actPaste</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image7</iconset>
+        </property>
+        <property name="text">
+            <string>Paste</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Paste</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+V</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>m_actLaunch</cstring>
+        </property>
+        <property name="text">
+            <string>Launch document</string>
+        </property>
+        <property name="menuText">
+            <string>Launch</string>
+        </property>
+        <property name="toolTip">
+            <string>Open current document in default application</string>
+        </property>
+    </action>
+</actions>
+<images>
+    <image name="image0">
+        <data format="PNG" length="201">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000009049444154388d6360a01160c422f69f02bd70c0844df0ffffff383103030383a68e2641076035981030343424683859066b6a683244b946e1359c2c83b303b3191844f0bb1c6be4c1c2121b60646464f8ffff3fc3fbebef19a6ae9fcac0f0868161d9ee650cd7af5c47318f851c173332e24d10e4198ccb37e8969115c6c4805183470d1e35180fa0a40621d6bc2102002c9834ded7573bbe0000000049454e44ae426082</data>
+    </image>
+    <image name="image1">
+        <data format="PNG" length="231">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000ae49444154388ded944b0ec3200c449f518e904be4905555e590398ebb005a0884027277998df9c4cfc32c02b78264a2477f3074867b86c6333daf671cf70c15f7072800cbc5c5c84b6af12080aac67b0114916eeee587cb77a87caa9f24c5f9c87097181fac6db99ae3beda5635e389ac0b55334ea1fb0b36e0489a5afbc7d3d76ac61974f54ddb1a208d7d840212a2b0731a40b9630ba7e94255ed9c46391f889dd3ccb1a5d3023c29cbdf6e9fde5a896300ab0f23420000000049454e44ae426082</data>
+    </image>
+    <image name="image2">
+        <data format="PNG" length="363">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000013249444154388db595bd6e833014853faa0cac452cdddad1d9ba36529ea26f9167a82ac433f42dfa14486665c363ba75b198b33583e380313f769b5e09e183b8878fc395817faae472feb9b5efc6ae3e3f4069787b075949442e40033928ad1675b6cde8da0e3464fb0c803b6bac3488cb5ae402a59563b2a44dbfd1b6aec42237e600e8dedc928df573fa42a36ba381dd7ee764e1105f6b4076fcfa264def3dd2e654f71a280b7378c662f01a2ee916a5db59724b3cec0fcab839d53c3d3e0464dcf77bc4ca8a808c1d3dee0fc938683ac6fd6119af934f65bce9cd4c4665e18fce5a95859fb137c72237370e75ccd98bc25eb44ffead5e247e3d442501f47bcd24f1d493e74a5692aeed909574fa3d633b87e3af3b57d1731c4a1c3dc731c4517b450cf1d25e910cd6b7fa3d25ebb7fca1ce8145fce4baae753c0000000049454e44ae426082</data>
+    </image>
+    <image name="image3">
+        <data format="PNG" length="218">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000a149444154388ded93410e85300844c77f1beed3eb989f86eb781f8f531704a168b55d1a7d1b822dc3585ae0e3b14c63dbb9482400ebfe75c984f44f95964b9602a446232e267615ad7e3a16a7d0cc9c01f345e3daf989888ac7fc0edd2fcd7fb6b0bae89df688fa7ac109938beab4f5eb67509505c77edaeabc17ad3f085358d4bc57bcbe828d331e752e33e1dc67e116ce5c4454a331f8f222fef68c0cfae39d6c805843a6328345e50000000049454e44ae426082</data>
+    </image>
+    <image name="image4">
+        <data format="PNG" length="211">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000009a49444154388ded93c10d80300845d16ddcc7751ad330835bb88fe3e0c120086d456f267d1763e1fffe2002747ecb600f3023a56502805d9df27b72fd41632431693de7ca0548ee72cc48001b9dc51a5cc7421febaba20836840f354af36ed50dd220fd7a7c82329e5e18b339eb78f645635f6c6393def52671741c767bbcfe32c6ac67f6256933947cdd6d2dae4e98c2a2ebc4f13fadd379e60088b14aa6dd7e51e40000000049454e44ae426082</data>
+    </image>
+    <image name="image5">
+        <data format="PNG" length="220">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000a349444154388dcd92c11183300c04cf199a493fb49397da713f2e473c200c63cef10948c27d18647bbd230bf8533c585ff3b858e49ee06e1b543003a5b3e02ee028f81dafbedda8465ba074e66b531189dc064036b6059a65b8005e610928cbbf85ec496ad32df0303c13480d0bc35b00d6630e1ff6a5ecc0d898d5426a4fba933cdea7c3afb43764fb29981994c6baf97c9914e581ac3b728ddbcc67b38280d16f3201aeec36905d7d63970000000049454e44ae426082</data>
+    </image>
+    <image name="image6">
+        <data format="PNG" length="282">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000e149444154388dd594cd0dc2300c853fa32e9311905881259801712aa7320713740c76e838e61012a5aadd9f543df024cb6aed3ebfd84ee1df2080aec8a92356b5b945a4ccdb84c62081582d7b11d1ade499d8535d4b9e5b61298eef7a600082e39f6e31f500287433f15ea1338f7acad2452616b983198f18b85d5a2cf24cacaa134b1f5bf1847085b341ee6e45222b154f63707ffc0ad0f2fea0a9e72bb662988907445ea3e7a83c9217831a5b1a90159f1fe86ec57e7e758f2d94f987293e25359e797b6ce73252bc70c6416b14370b59eceef192824314c74be0fddd2c7f20be0fffea1575a57f630000000049454e44ae426082</data>
+    </image>
+    <image name="image7">
+        <data format="PNG" length="364">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000013349444154388db595e16dc32014843fa28ee02598215297285b6485589565af902de81295b24259c24a4778fd01d8c4e060b7cd49e8fcf0f3711c4886274155decb2fbec99a4a224832abd625b33771a22aba57fc1045edc5d2779e974271a428f4dfd93800d8cee24603f49893e1f675e3fa79e5db792ed5e6e4fbdd68b0ddbd9949d861d08d055a00dce8d08d861174a38bb5478b6e2c0e9309bf78f22b6b2c6038be1e57834ca199771a4d2d84c3caa3c15e3cc77a2b17a348578ecef7d6c52862c62527edbb051c50e34ac6b91387c8793567a50644cee13ace396719e7d9d920f0119ce98945de424d141768d524fc28c3b84d2f52c21c432a5ecd78abe3a5f8a68c6b8e951ac2b39efaff9c71e960951afe23e31274fd1e3f725c62bf83e440d7472f7b01bd6cf8cd58d9e234e727e107d3d75b070796c3550000000049454e44ae426082</data>
+    </image>
+</images>
+<connections>
+    <connection>
+        <sender>m_actCopy</sender>
+        <signal>activated()</signal>
+        <receiver>m_editor</receiver>
+        <slot>copy()</slot>
+    </connection>
+    <connection>
+        <sender>m_actCut</sender>
+        <signal>activated()</signal>
+        <receiver>m_editor</receiver>
+        <slot>cut()</slot>
+    </connection>
+    <connection>
+        <sender>m_actPaste</sender>
+        <signal>activated()</signal>
+        <receiver>m_editor</receiver>
+        <slot>paste()</slot>
+    </connection>
+    <connection>
+        <sender>m_actRedo</sender>
+        <signal>activated()</signal>
+        <receiver>m_editor</receiver>
+        <slot>redo()</slot>
+    </connection>
+    <connection>
+        <sender>m_actUndo</sender>
+        <signal>activated()</signal>
+        <receiver>m_editor</receiver>
+        <slot>undo()</slot>
+    </connection>
+    <connection>
+        <sender>m_actExit</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>m_actNew</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>slotNew()</slot>
+    </connection>
+    <connection>
+        <sender>m_actOpen</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>slotOpen()</slot>
+    </connection>
+    <connection>
+        <sender>m_actSave</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>slotSave()</slot>
+    </connection>
+    <connection>
+        <sender>m_actSaveAs</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>slotSaveAs()</slot>
+    </connection>
+    <connection>
+        <sender>m_actLaunch</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindowBase</receiver>
+        <slot>slotLaunch()</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotOpen()</slot>
+    <slot access="protected">slotNew()</slot>
+    <slot access="protected">slotSave()</slot>
+    <slot access="protected">slotSaveAs()</slot>
+    <slot access="protected">slotLaunch()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
