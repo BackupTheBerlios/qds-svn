@@ -24,75 +24,53 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+#ifndef LAUNCHERSERVICE_H
+#define LAUNCHERSERVICE_H
 
-// local includes
-#include "../servicefactoryimpl.h"
+// QDBus includes
+#include <dbus/qdbusconnection.h>
+#include <dbus/qdbusobject.h>
 
-///////////////////////////////////////////////////////////////////////////////
-
+// forward declarations
+class QDBusError;
 namespace QDS
 {
+    class Launcher;
+};
+class QString;
+class QUrl;
 
-class ServiceFactoryImplPrivate
+class LauncherService : public QDBusObjectBase
 {
 public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
+    LauncherService(const QString& path, QDS::Launcher* launcher);
+    virtual ~LauncherService();
 
-    Launcher* launcher;
+    void setConnection(const QDBusConnection& connection);
+
+protected:
+    virtual bool handleMethodCall(const QDBusMessage& message);
+
+private:
+    bool launch(const QString& filename, QDBusError& error);
+    bool launch(const QString& filename, const QString& mimeType, QDBusError& error);
+    bool launch(const QUrl& url, QDBusError& error);
+    bool launch(const QUrl& url, const QString& mimeType, QDBusError& error);
+
+    void sendReply(const QDBusMessage& message, bool ret, const QDBusError& error);
+
+private:
+    QDBusConnection m_connection;
+    QString m_path;
+    bool m_registered;
+
+    QDS::Launcher* m_launcher;
+
+private:
+    LauncherService(const LauncherService&);
+    LauncherService& operator=(const LauncherService&);
 };
 
-};
-
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
-}
+#endif
 
 // End of File

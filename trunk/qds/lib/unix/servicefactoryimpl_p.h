@@ -24,75 +24,32 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+#ifndef QDS_SERVICEFACTORYIMPL_P_H
+#define QDS_SERVICEFACTORYIMPL_P_H
 
-// local includes
-#include "../servicefactoryimpl.h"
+// Qt includes
 
-///////////////////////////////////////////////////////////////////////////////
+// forward declarations
+class QDBusProxy;
 
 namespace QDS
 {
 
-class ServiceFactoryImplPrivate
+class Launcher;
+
+class ServiceFactoryImplPrivate : public QObject
 {
 public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
+    ServiceFactoryImplPrivate();
+    virtual ~ServiceFactoryImplPrivate();
 
+public:
+    QDBusProxy* daemon;
     Launcher* launcher;
 };
 
 };
 
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
-}
+#endif
 
 // End of File

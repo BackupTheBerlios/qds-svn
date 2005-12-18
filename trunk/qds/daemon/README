@@ -1,0 +1,32 @@
+On Unix the access to desktop services depends on the currently available
+desktop API.
+
+QDS uses D-BUS (http://www.freedesktop.org/Software/dbus) to do
+out-of-process method calls to a suitable service provider.
+
+This could be a desktop environment specific program or the
+QDS-Daemon which is part of the QDS package.
+
+The QDS-Daemon handles different desktop APIs by delegating the service 
+initialization/calls to a service plugin.
+
+Which plugin is used depends on three items:
+- if there is a plugin name specified on the daemon's commandline
+- if there is a plugin name specified in the QDS configuration file
+- if QDS can detect which desktop API it is being executed on
+
+A name specified on the commandline using the commandline switch 
+
+--plugin=pluginname
+
+overrules any plugin name found in the configuration file.
+
+Possible QDS configuration file qdsrc (for users in $HOME/.qt/) specifying to
+use the KDE plugin (libqds_kde.so) if no override is given on commandline:
+
+[General]
+Plugin=kde
+
+When there is neither a name given on commandline nor a name specified in
+the configuration file, QDS will try to detect known desktop APIs before it
+falls back to built in services.

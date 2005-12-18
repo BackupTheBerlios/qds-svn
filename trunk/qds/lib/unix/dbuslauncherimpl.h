@@ -24,75 +24,40 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+#ifndef DBUSLAUNCHERIMPL_H
+#define DBUSLAUNCHERIMPL_H
 
-// local includes
-#include "../servicefactoryimpl.h"
+// plugin includes
+#include "plugins/launcherimpl.h"
 
-///////////////////////////////////////////////////////////////////////////////
+// forward declarations
+class QDBusProxy;
 
 namespace QDS
 {
 
-class ServiceFactoryImplPrivate
+class DBusLauncherImpl : public LauncherImpl
 {
 public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
+    DBusLauncherImpl(QDBusProxy* proxy);
+    virtual ~DBusLauncherImpl();
 
-    Launcher* launcher;
+    virtual bool launch(const QString& fileName, QWidget* window = 0);
+
+    virtual bool launch(const QString& fileName, const QString& mimeType,
+                        QWidget* window = 0);
+
+    virtual bool launch(const QUrl& url, QWidget* window = 0);
+
+    virtual bool launch(const QUrl& url, const QString& mimeType,
+                        QWidget* window = 0);
+
+private:
+    QDBusProxy* m_proxy;
 };
 
 };
 
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
-}
+#endif
 
 // End of File

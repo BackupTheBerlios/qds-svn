@@ -18,15 +18,15 @@ unix {
   OBJECTS_DIR = .obj
   MOC_DIR = .moc
   UI_DIR = .ui
-  
-  POST_TARGETDEPS += ../lib/libqds.a
+
+  POST_TARGETDEPS += ../lib/libqds.so
 }
 
 win32 {
   OBJECTS_DIR = obj
   MOC_DIR = moc
   UI_DIR = ui
-  
+
   POST_TARGETDEPS += ../lib/qds.lib
 }
 
@@ -34,6 +34,6 @@ macx {
   OBJECTS_DIR = .obj
   MOC_DIR = .moc
   UI_DIR = .ui
-  
+
   POST_TARGETDEPS += ../lib/libqds.a
 }

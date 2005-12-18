@@ -24,75 +24,42 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+#ifndef QDSDAEMON_H
+#define QDSDAEMON_H
 
-// local includes
-#include "../servicefactoryimpl.h"
+// Qt includes
+#include <qobject.h>
 
-///////////////////////////////////////////////////////////////////////////////
-
+// forward declarations
 namespace QDS
 {
+    class ServiceFactoryImpl;
+};
 
-class ServiceFactoryImplPrivate
+class FactoryService;
+class QApplication;
+
+class Daemon : public QObject
 {
+    Q_OBJECT
 public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
+    Daemon();
+    virtual ~Daemon();
 
-    Launcher* launcher;
+    QApplication* createApplication(int argc, char** argv);
+
+private slots:
+    void slotRegisterService();
+
+private:
+    QDS::ServiceFactoryImpl* m_factory;
+    FactoryService* m_service;
+
+private:
+    Daemon(const Daemon&);
+    Daemon& operator=(const Daemon&);
 };
 
-};
-
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
-}
+#endif
 
 // End of File

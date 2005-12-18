@@ -5,13 +5,13 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
     are met:
-    
+
     1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
     IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -24,40 +24,23 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// standard includes
-#include <cstdlib>
-
 // Qt includes
-#include <qlibrary.h>
-#include <qsettings.h>
+#include <qapplication.h>
+
+// QDBus includes
+#include <dbus/qdbusconnection.h>
+#include <dbus/qdbuserror.h>
+#include <dbus/qdbusmessage.h>
+#include <dbus/qdbusproxy.h>
 
 // QDS includes
 #include "qds/launcher.h"
 
 // local includes
 #include "../servicefactoryimpl.h"
+#include "dbuslauncherimpl.h"
 #include "mailcaplauncherimpl.h"
-
-///////////////////////////////////////////////////////////////////////////////
-
-namespace QDS
-{
-
-class ServiceFactoryImplPrivate
-{
-public:
-    ServiceFactoryImplPrivate() : pluginLib(0), launcher(0)
-    {
-    }
-
-    bool loadPlugin(const QString& name);
-    
-public:
-    QLibrary* pluginLib;
-    Launcher* launcher;
-};
-
-};
+#include "servicefactoryimpl_p.h"
 
 using namespace QDS;
 
@@ -77,125 +60,72 @@ ServiceFactoryImpl::~ServiceFactoryImpl()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-QApplication* ServiceFactoryImpl::createApplication(int argc, char** argv, bool useGUI)
+bool ServiceFactoryImpl::init(int argc, char** argv)
 {
-    QApplication* app = 0;
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
 
-    QString pluginName;
-    for (int i = 0; i < argc; ++i)
+    QDBusConnection connection =
+        QDBusConnection::addConnection(QDBusConnection::SessionBus);
+    if (!connection.isConnected())
     {
-        QString arg = QString::fromLocal8Bit(argv[i]);
-        if (arg.startsWith("--qds="))
-        {
-            pluginName = arg.mid(6);
-            break;
-        }
+        qWarning("QDS: no connection to D-BUS session bus");
     }
 
-    // no commandline override, check config
-    if (pluginName.isEmpty())
-    {
-        qDebug("No QDS plugin specified with --qds=name commandline option. Checking config");
-        
-        QSettings config;
-        config.setPath("qdesktopservices", "QDesktopServices");
-        
-        config.beginGroup("qds"); // this results in a Qt config file called qdsrc
+    m_private->daemon->setConnection(connection);
 
-        pluginName = config.readEntry("/General/Plugin");
-    }
-
-    // no plugin in config either, try detection
-    if (pluginName.isEmpty())
-    {
-        qDebug("No QDS plugin specified in config file .qt/qdsrc. Trying detection");
-        
-        // use KDE plugin if KDE_FULL_SESSION is true
-        // use GNOME plugin if GNOME_DESKTOP_SESSION_ID is set
-        
-        char* value = std::getenv("KDE_FULL_SESSION");
-        if (value != 0 && QString::fromLocal8Bit(value) == "true")
-        {
-                pluginName = "kde";
-        }
-        else
-        {
-            value = std::getenv("GNOME_DESKTOP_SESSION_ID");
-            if (value != 0 && !QString::fromLocal8Bit(value).isEmpty())
-            {
-                pluginName = "gnome";
-            }
-        }
-    }
-
-    if (pluginName.isEmpty())
-    {
-        qWarning("QDS::ServiceFactory: cannot determine which plugin to use.\n"
-                 "Continuing with standard Qt feature set");
-        return app;
-    }
-
-    qDebug("Using QDS plugin '%s'", pluginName.local8Bit().data());
-    
-    if (m_private->loadPlugin(pluginName))
-    {
-        QApplication* (*createApp)(int, char**, bool);
-        
-        *(void**) (&createApp) = m_private->pluginLib->resolve("createApplication");
-
-        if (createApp != 0)
-        {
-            app = (*createApp)(argc, argv, useGUI);
-        }
-    }
-    else
-        qDebug("Failed to load plugin '%s'. Continuing with standard Qt feature set",
-               pluginName.local8Bit().data());
-    
-    return app;
+    return connection.isConnected();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ServiceFactoryImpl::initNetwork()
 {
-    if (m_private->pluginLib == 0) return false;
+    if (!m_private->daemon->canSend()) return false;
 
-    bool (*initNetwork)();
-    *(void**) (&initNetwork) = m_private->pluginLib->resolve("initNetwork");
-
-    if (initNetwork == 0) return false;
-
-    return (*initNetwork)();
+    return false; // TODO call daemon
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ServiceFactoryImpl::initLauncher()
 {
-    if (m_private->pluginLib == 0)
+    if (!m_private->daemon->canSend())
     {
         m_private->launcher = new Launcher();
         m_private->launcher->m_impl = new MailcapLauncherImpl();
         return true;
     }
 
-    LauncherImpl* (*initLauncher)();
-    *(void**) (&initLauncher) = m_private->pluginLib->resolve("initLauncher");
+    LauncherImpl* launcherImpl;
 
-    if (initLauncher == 0) return false;
-
-    LauncherImpl* launcherImpl = (*initLauncher)();
-    if (launcherImpl == 0)
+    QDBusError error;
+    QDBusMessage reply =
+        m_private->daemon->sendWithReply("InitLauncher", QValueList<QVariant>(), &error);
+    if (error.isValid() || reply.count() < 1 || !reply[0].toBool())
     {
-        qWarning("QDS::ServiceFactory: plugin failed to create a launcher");
+        if (error.isValid())
+        {
+            qWarning("Error while requesting launcher on D-Bus:\nerror '%s'\nmessage '%s'",
+                     error.name().local8Bit().data(), error.message().local8Bit().data());
+        }
 
         launcherImpl = new MailcapLauncherImpl();
     }
-    
+    else
+    {
+        QDBusProxy* proxy = new QDBusProxy(m_private->daemon, "QDS-Launcher-Proxy");
+        proxy->setService("de.berlios.QDS");
+        proxy->setPath("/QDS/Launcher");
+        proxy->setInterface("de.berlios.qds.Launcher");
+        proxy->setConnection(m_private->daemon->connection());
+
+        launcherImpl = new DBusLauncherImpl(proxy);
+    }
+
     m_private->launcher = new Launcher();
     m_private->launcher->m_impl = launcherImpl;
-    
+
     return true;
 }
 
@@ -208,32 +138,23 @@ Launcher* ServiceFactoryImpl::launcher()
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-    
-bool ServiceFactoryImplPrivate::loadPlugin(const QString& name)
+
+ServiceFactoryImplPrivate::ServiceFactoryImplPrivate()
+    : QObject(0),
+      daemon(0),
+      launcher(0)
 {
-    QString libName = "qds_" + name;
+    daemon = new QDBusProxy(this, "QDS-Daemon-Proxy");
 
-    QLibrary* lib = new QLibrary(libName);
+    daemon->setService("de.berlios.QDS");
+    daemon->setPath("/QDS");
+    daemon->setInterface("de.berlios.qds.Factory");
+}
 
-    if (!lib->load())
-    {
-        // Some Qt version do not create the full name correctly, try again
-        // using full name
-        libName = "lib" + libName + ".so";
+///////////////////////////////////////////////////////////////////////////////
 
-        delete lib;
-        lib = new QLibrary(libName);
-
-        if (!lib->load())
-        {
-            delete lib;
-            return false;
-        }
-    }
-
-    pluginLib = lib;
-
-    return true;
+ServiceFactoryImplPrivate::~ServiceFactoryImplPrivate()
+{
 }
 
 // End of File

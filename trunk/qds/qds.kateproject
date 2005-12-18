@@ -1,3 +1,11 @@
+[Dir daemon]
+Dirs=
+Files=daemon.pro/daemon.cpp/daemon.h/main.cpp/servicefactoryimpl.cpp/factoryservice.cpp/factoryservice.h/launcherservice.cpp/launcherservice.h
+
+[Dir daemon/plugins]
+Dirs=
+Files=launcherimpl.h/qdsplugin.h
+
 [Dir docs]
 Dirs=
 Files=doxygen.conf
@@ -28,7 +36,7 @@ Files=servicefactoryimpl.cpp/launcher.cpp
 
 [Dir lib/unix]
 Dirs=
-Files=launcher.cpp/servicefactoryimpl.cpp/mailcap.cpp/mailcap.h/mimetypes.cpp/mimetypes.h/mailcaplauncherimpl.cpp/mailcaplauncherimpl.h
+Files=launcher.cpp/servicefactoryimpl.cpp/mailcap.cpp/mailcap.h/mimetypes.cpp/mimetypes.h/mailcaplauncherimpl.cpp/mailcaplauncherimpl.h/servicefactoryimpl_p.h/dbuslauncherimpl.cpp/dbuslauncherimpl.h
 
 [Dir lib/win32]
 Dirs=
@@ -59,7 +67,7 @@ Dirs=
 Files=main.cpp/qdstest.pro
 
 [Project Dir]
-Dirs=include/lib/plugins/exampleapp/docs
+Dirs=include/lib/plugins/exampleapp/docs/daemon
 Files=qds.pro/AUTHORS/ChangeLog
 
 [Project File]

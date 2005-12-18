@@ -24,75 +24,28 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+// Qt includes
+#include <qapplication.h>
 
 // local includes
-#include "../servicefactoryimpl.h"
+#include "daemon.h"
 
-///////////////////////////////////////////////////////////////////////////////
-
-namespace QDS
+int main(int argc, char** argv)
 {
+    Daemon daemon;
 
-class ServiceFactoryImplPrivate
-{
-public:
-    ServiceFactoryImplPrivate() : launcher(0)
+    QApplication* app = daemon.createApplication(argc, argv);
+
+    if (app == 0)
     {
+        qFatal("Failed to create QApplication instance");
     }
 
-    Launcher* launcher;
-};
+    int ret = app->exec();
 
-};
+    delete app;
 
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
+    return ret;
 }
 
 // End of File

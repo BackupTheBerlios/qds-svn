@@ -9,17 +9,16 @@
 
 int main(int argc, char** argv)
 {
-    QApplication* app = QDS::createApplication(argc, argv);
+    QApplication app(argc, argv);
+
+    QDS::init(app.argc(), app.argv());
 
     MainWindow* mainWindow = new MainWindow();
     mainWindow->show();
 
-    app->setMainWidget(mainWindow);
-    
-    int ret = app->exec();
+    app.setMainWidget(mainWindow);
 
-    delete app;
-    return ret;
+    return app.exec();
 }
 
 // End of File

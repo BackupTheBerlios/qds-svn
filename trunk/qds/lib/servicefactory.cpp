@@ -5,13 +5,13 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
     are met:
-    
+
     1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
     IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -42,40 +42,30 @@ ServiceFactory* ServiceFactory::m_instance = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-QApplication* ServiceFactory::createApplication(int argc, char** argv, bool useGUI)
+bool ServiceFactory::init(int argc, char** argv)
 {
-    if (qApp != 0)
-    {
-        qFatal("QDS::ServiceFactory: Cannot create application because there"
-               " is already one");
-    }
-
-    QApplication* app = m_impl->createApplication(argc, argv, useGUI);
-    
-    if (app == 0) app = new QApplication(argc, argv, useGUI);
-
-    return app;
+    return m_impl->init(argc, argv);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-    
+
 bool ServiceFactory::initService(Service service)
 {
     bool result = false;
-    
+
     switch (service)
     {
         case Network:
             if (!m_impl->initNetwork())
                 qInitNetworkProtocols();
-            
+
             result = true;
             break;
 
         case Launching:
             result = m_impl->initLauncher();
             break;
-            
+
         default:
             break;
     }

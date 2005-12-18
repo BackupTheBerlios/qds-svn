@@ -5,13 +5,13 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
     are met:
-    
+
     1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
     IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -49,8 +49,8 @@ class ServiceFactoryImpl;
 
 //! Central access point to the QDS API
 /*! The ServiceFactory handles all stages of the QDS life cycle.
-    It handles the plugin loading on Unix, creation of the QApplication object,
-    service initialization and provides access to the services which are not
+    It handles the inter-process communication on Unix, service
+    initialization and provides access to the services which are not
     covered by the standard Qt API, for example the Launcher.
 
     The ServiceFactory singleton instance can be accessed through the usual
@@ -63,24 +63,22 @@ class ServiceFactoryImpl;
 
     int main(int argc, char** argv)
     {
+        QApplication app(argc, argv);
+
         QDS::ServiceFactory* qds = QDS::ServiceFactory::instance();
-        
-        QApplication* app = qds->createApplication(argc, argv);
-        
+
+        qds->init(app.argc(), app.argv());
+
         // initialize the Launcher service
         qds->initService(QDS::Launching);
-        
+
         // create main widget
 
-        int returnValue = app->exec();
-
-        delete app;
-
-        return returnValue;
+        return app.exec();
     }
     \endcode
-    
-    If you just want to get started and are staisfied with the default set of services,
+
+    If you just want to get started and are satisfied with the default set of services,
     you can use the convenience API declared in qds.h:
     \code
     #include <qapplication.h>
@@ -88,24 +86,15 @@ class ServiceFactoryImpl;
 
     int main(int argc, char** argv)
     {
+        QApplication app(argc, argv);
+
         // also initializes services Network and Launching
-        QApplication* app = QDS::createApplication(argc, argv);
+        QDS::init(app.argc(), app.argv());
 
         // create main widget
 
-        int returnValue = app->exec();
-
-        delete app;
-
-        return returnValue;
+        return app.exec();
     }
-    \endcode
-
-    Possible QDS configuration file qdsrc (for users in $HOME.qt/) specifying to
-    use the KDE plugin (libqds_kde.so) if no override is given on commandline
-    \code
-    [General]
-    Plugin=kde
     \endcode
 */
 class ServiceFactory
@@ -118,44 +107,28 @@ public:
         return m_instance;
     }
 
-    //! Initialize QDS and create a QApplication instance
+    //! Initialize QDS
     /*! This is the QDS starting point.
-        It handles the plugin loading on Unix and creation of the program's QApplication
-        instance.
 
-        The the creation of the QApplication object is handled by QDS so it can
-        delegate to the plugin if necessary, i.e. in case the plugin needs a special
-        QApplication subclass to integrate with the desktop API's event loop.
-
-        On Unix the access to desktop services depends on the currently available
+        On Unix this handles the setup of the D-BUS connection to the service
+        daemon, which in turn handles the adapting to the currently running
         desktop API.
-        QDS handles this by delegating the service initialization to a service plugin.
-        Which plugin is used depends on three items:
-        - if there is a plugin name specified on the application's commandline
-        - if there is a plugin name specified in the QDS configuration file
-        - if QDS can detect which desktop API it is being executed on
-
-        A name specified on the commandline using the commandline switch --qds=pluginname
-        overrules any plugin name found in the configuration file.
-        When there is neither a name given on commandline nor a name specified in
-        the configuration file, QDS will try to detect known desktop APIs before it
-        falls back to built in services.
 
         \param argc the number of program arguments. Usually the value passed to int main()
         \param argv the array of program arguments. Usually the value passed to int main()
-        \param useGUI wether to create a Qt application with GUI features
 
-        \return the pointer to the created QApplication instance. Equal to qApp
+        \return \c true if successfull, otherwise \c false
     */
-    QApplication* createApplication(int argc, char** argv, bool useGUI = true);
+    bool init(int argc, char** argv);
 
     //! Initializes a QDS service
     /*! QDS services are implemented using the native desktop APIs. On Unix, where there is
         no single desktop API but a couple of them, the services are implemented in
-        service plugins.
+        service plugins loaded into a separate daemon or by suitable D-BUS interface
+        implementations in desktop base components.
 
         The initService method tries to initialize the native service and either falls back to
-        an internal solution or returns false on failure.
+        an internal solution or returns \c false on failure.
 
         For example the fallback service for Network are the QNetworkProtocol implementations
         shipped with Qt, i.e. failing to initialize native networking will result in
@@ -167,7 +140,7 @@ public:
 
         \param service the QDS service to initialize
 
-        \return true if initialization of the service or at least of the fallback succeeded
+        \return \c true if initialization of the service or at least of the fallback succeeded
     */
     bool initService(Service service);
 
@@ -178,7 +151,7 @@ public:
         \sa Launcher
     */
     Launcher* launcher();
-        
+
 private:
     ServiceFactory();
     ~ServiceFactory();

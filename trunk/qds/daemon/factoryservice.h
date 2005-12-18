@@ -24,75 +24,52 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// QDS includes
-#include "qds/launcher.h"
+#ifndef FACTORYSERVICE_H
+#define FACTORYSERVICE_H
 
-// local includes
-#include "../servicefactoryimpl.h"
+// QDBus includes
+#include <dbus/qdbusconnection.h>
+#include <dbus/qdbusobject.h>
 
-///////////////////////////////////////////////////////////////////////////////
-
+// forward declarations
 namespace QDS
 {
+    class ServiceFactoryImpl;
+};
 
-class ServiceFactoryImplPrivate
+class LauncherService;
+class QDBusError;
+
+class FactoryService : public QDBusObjectBase
 {
 public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
+    FactoryService(const QString& path, QDS::ServiceFactoryImpl* factory);
+    virtual ~FactoryService();
 
-    Launcher* launcher;
+    void setConnection(const QDBusConnection& connection);
+
+protected:
+    virtual bool handleMethodCall(const QDBusMessage& message);
+
+private:
+    bool initLauncher(QDBusError& error);
+    bool initNetwork(QDBusError& error);
+
+    void sendReply(const QDBusMessage& message, bool ret, const QDBusError& error);
+
+private:
+    QDBusConnection m_connection;
+    QString m_path;
+    bool m_registered;
+
+    QDS::ServiceFactoryImpl* m_factory;
+    LauncherService* m_launcher;
+
+private:
+    FactoryService(const FactoryService&);
+    FactoryService& operator=(const FactoryService&);
 };
 
-};
-
-using namespace QDS;
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
-{
-    m_private = new ServiceFactoryImplPrivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ServiceFactoryImpl::~ServiceFactoryImpl()
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::init(int argc, char** argv)
-{
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initNetwork()
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
-}
+#endif
 
 // End of File

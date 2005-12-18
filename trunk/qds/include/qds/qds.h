@@ -5,13 +5,13 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
     are met:
-    
+
     1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
     IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -50,12 +50,13 @@
     \subsection multi_de Exchangable desktop API platforms
     On systems where more than one desktop service API is used, Unix and Linux
     systems, the actual desktop specific service implementations are
-    delegated to plugins and the QDS library built-ins are only meant to
-    be fallback implementations for the unfortunate situation that a plugin
-    based desktop access is not available.
+    delegated to either a daemon using plugins or desktop environment services
+    implementing the QDS D-BUS interfaces themselves and the QDS library
+    built-ins are only meant to be fallback implementations for the unfortunate
+    situation that not D-BUS accessible service exists.
 
-    The functionality available to an application in this platforms will
-    depend on loaded plugin.
+    The functionality available to an application on this platforms will
+    depend on the service interface implementation.
 
     \subsection summary Summary
     QDS can provide access to additional features commonly found on
@@ -101,24 +102,17 @@ class QUrl;
 */
 namespace QDS
 {
-    //! Create a QApplication instance and initialize the default service set
-    /*! This function serves as a replacement for the direct construction of
-        a QApplication instance using the constructor.
+    //! Initialize the library and the default service set
+    /*! This function initializes and runtime dependencies the QDS implementation
+        might need.
 
-        It will pass the given parameters unchanged to the QApplication constructor
-        but will examine them for QDS specific commandline switches, for example
-        which the plugin override switch.
-
-        On Unix this will also try to load the QDS plugin prior to application creation.
-
-        After application creation it will try to initialize the default set of QDS
-        services: Network and Launcher
+        On Unix this will try to connect to a D-BUS service named
+        <tt>"de.berlios.QDS"</tt>
 
         \param argc the number of program arguments. Usually the value passed to int main()
         \param argv the array of program arguments. Usually the value passed to int main()
-        \param useGUI wether to create a Qt application with GUI features
 
-        \return the pointer to the created QApplication instance. Equal to qApp
+        \return \c true if successfull, otherwise \c false
 
         Example main.cpp
         \code
@@ -127,21 +121,19 @@ namespace QDS
 
         int main(int argc, char** argv)
         {
-            QApplication* app = QDS::createApplication(argc, argv);
+            QApplication app(argc, argv)
+
+            QDS::init(argc, argv);
 
             // create main widget
 
-            int returnValue = app->exec();
-
-            delete app;
-
-            return returnValue;
+            return app.exec();
         }
         \endcode
 
         \sa ServiceFactory
     */
-    QApplication* createApplication(int argc, char** argv, bool useGUI = true);
+    bool init(int argc, char** argv);
 
     //! Launch a given file, requesting automatic detection of MIME type
     /*! Try to launch the given file, i.e. find an application handling the
@@ -153,7 +145,7 @@ namespace QDS
         // open a PDF file from the application's current working directory in the PDF viewer
         QDS::launch( "example.pdf" );
         \endcode
-        
+
         \param fileName file name with relative or absolute path. Relative paths are
                         treated relative to the application's current working directory
 
@@ -174,7 +166,7 @@ namespace QDS
         // open Trolltech's website in the default browser
         QDS::launch( QUrl("http://www.trolltech.com/") );
         \endcode
-        
+
         \param url URL to be launched. Depending on the launcher implementation it
                    might use the protocol or, if the URL points to a file, the MIME
                    type of the file to decide which application to launch
@@ -184,7 +176,7 @@ namespace QDS
 
         \warning Be sure to pass a QUrl object to launch, because just passing a string
                  will result in a call to launch(const QString&)
-        
+
         \sa Launcher
     */
     bool launch(const QUrl& url);

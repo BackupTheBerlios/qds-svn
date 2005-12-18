@@ -24,75 +24,71 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// Qt includes
+#include <qapplication.h>
+#include <qtimer.h>
+
+// QDBus includes
+#include <dbus/qdbusconnection.h>
+
 // QDS includes
 #include "qds/launcher.h"
 
+// QDS internal includes
+#include "servicefactoryimpl.h"
+
 // local includes
-#include "../servicefactoryimpl.h"
-
-///////////////////////////////////////////////////////////////////////////////
-
-namespace QDS
-{
-
-class ServiceFactoryImplPrivate
-{
-public:
-    ServiceFactoryImplPrivate() : launcher(0)
-    {
-    }
-
-    Launcher* launcher;
-};
-
-};
+#include "daemon.h"
+#include "factoryservice.h"
 
 using namespace QDS;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ServiceFactoryImpl::ServiceFactoryImpl() : m_private(0)
+Daemon::Daemon() : QObject(0, "QDS-Daemon"), m_factory(0), m_service(0)
 {
-    m_private = new ServiceFactoryImplPrivate();
+    m_factory = new ServiceFactoryImpl();
+
+    QTimer::singleShot(0, this, SLOT(slotRegisterService()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ServiceFactoryImpl::~ServiceFactoryImpl()
+Daemon::~Daemon()
 {
+    delete m_service;
+    delete m_factory;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ServiceFactoryImpl::init(int argc, char** argv)
+QApplication* Daemon::createApplication(int argc, char** argv)
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    QApplication* app = 0;
+    if (!m_factory->init(argc, argv))
+    {
+        app = new QApplication(argc, argv, false);
+    }
+    else
+        app = qApp;
 
-    return true;
+    return app;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ServiceFactoryImpl::initNetwork()
+void Daemon::slotRegisterService()
 {
-    return false;
-}
+    QDBusConnection connection = QDBusConnection::addConnection(QDBusConnection::SessionBus);
+    if (!connection.isConnected())
+    {
+        qFatal("Cannot connect to D-BUS session bus");
+    }
 
-///////////////////////////////////////////////////////////////////////////////
+    connection.requestName("de.berlios.QDS", QDBusConnection::NoReplace);
 
-bool ServiceFactoryImpl::initLauncher()
-{
-    m_private->launcher = new Launcher();
-
-    return m_private->launcher != 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Launcher* ServiceFactoryImpl::launcher()
-{
-    return m_private->launcher;
+    m_service = new FactoryService("/QDS", m_factory);
+    m_service->setConnection(connection);
 }
 
 // End of File
