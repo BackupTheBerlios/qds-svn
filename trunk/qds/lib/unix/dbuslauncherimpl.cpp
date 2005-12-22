@@ -36,8 +36,6 @@
 // local includes
 #include "dbuslauncherimpl.h"
 
-using namespace QDS;
-
 ///////////////////////////////////////////////////////////////////////////////
 
 DBusLauncherImpl::DBusLauncherImpl(QDBusProxy* proxy) : m_proxy(proxy)

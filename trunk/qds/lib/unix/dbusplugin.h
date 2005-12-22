@@ -24,34 +24,26 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DBUSLAUNCHERIMPL_H
-#define DBUSLAUNCHERIMPL_H
+#ifndef QDS_DBUSPLUGIN_H
+#define QDS_DBUSPLUGIN_H
 
-// plugin includes
-#include "plugins/launcherimpl.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // forward declarations
-class QDBusProxy;
+class DBusPlugin;
+class LauncherImpl;
 
-class DBusLauncherImpl : public LauncherImpl
-{
-public:
-    DBusLauncherImpl(QDBusProxy* proxy);
-    virtual ~DBusLauncherImpl();
+DBusPlugin* createPlugin(int argc, char** argv);
 
-    virtual bool launch(const QString& fileName, QWidget* window = 0);
+bool initNetwork(DBusPlugin* plugin);
 
-    virtual bool launch(const QString& fileName, const QString& mimeType,
-                        QWidget* window = 0);
+LauncherImpl* initLauncher(DBusPlugin * plugin);
 
-    virtual bool launch(const QUrl& url, QWidget* window = 0);
-
-    virtual bool launch(const QUrl& url, const QString& mimeType,
-                        QWidget* window = 0);
-
-private:
-    QDBusProxy* m_proxy;
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

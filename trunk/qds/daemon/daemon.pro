@@ -4,6 +4,11 @@ TARGET = qds-daemon
 
 CONFIG += qt thread warn_on debug
 
+DBUSDIR = $$(DBUSDIR)
+isEmpty(DBUSDIR) {
+    error( Please set DBUSDIR to your D-BUS installation prefix )
+}
+
 SOURCES = main.cpp daemon.cpp \
           factoryservice.cpp \
           launcherservice.cpp \

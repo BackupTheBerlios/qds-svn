@@ -27,24 +27,26 @@
 #ifndef QDS_SERVICEFACTORYIMPL_P_H
 #define QDS_SERVICEFACTORYIMPL_P_H
 
-// Qt includes
-
 // forward declarations
-class QDBusProxy;
+class DBusPlugin;
+class QLibrary;
 
 namespace QDS
 {
 
 class Launcher;
 
-class ServiceFactoryImplPrivate : public QObject
+class ServiceFactoryImplPrivate
 {
 public:
     ServiceFactoryImplPrivate();
     virtual ~ServiceFactoryImplPrivate();
 
+    bool loadPlugin();
+
 public:
-    QDBusProxy* daemon;
+    QLibrary* pluginLib;
+    DBusPlugin* plugin;
     Launcher* launcher;
 };
 

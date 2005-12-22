@@ -1,3 +1,10 @@
+2005-12-21 krake:
+    * Implemented the D-BUS access as a plugin (dlopen) to make Unix lib a static lib
+      again while still not requiring the application to link against D-BUS libs
+    * Remove the D-BUS related builds from the overall build process so building lib or
+      example application does not fail just because D-BUS or Qt D-BUS bindings are not
+      available
+
 2005-12-17 krake:
     * Implemented a QDS daemon that provides services via D-BUS
     * Changed the Unix implementation to use D-BUS calls instead of plugin loading

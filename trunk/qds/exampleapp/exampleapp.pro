@@ -19,7 +19,7 @@ unix {
   MOC_DIR = .moc
   UI_DIR = .ui
 
-  POST_TARGETDEPS += ../lib/libqds.so
+  POST_TARGETDEPS += ../lib/libqds.a
 }
 
 win32 {

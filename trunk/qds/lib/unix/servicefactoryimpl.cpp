@@ -25,20 +25,14 @@
 */
 
 // Qt includes
-#include <qapplication.h>
-
-// QDBus includes
-#include <dbus/qdbusconnection.h>
-#include <dbus/qdbuserror.h>
-#include <dbus/qdbusmessage.h>
-#include <dbus/qdbusproxy.h>
+#include <qlibrary.h>
 
 // QDS includes
 #include "qds/launcher.h"
 
 // local includes
 #include "../servicefactoryimpl.h"
-#include "dbuslauncherimpl.h"
+#include "dbusplugin.h"
 #include "mailcaplauncherimpl.h"
 #include "servicefactoryimpl_p.h"
 
@@ -65,62 +59,61 @@ bool ServiceFactoryImpl::init(int argc, char** argv)
     Q_UNUSED(argc);
     Q_UNUSED(argv);
 
-    QDBusConnection connection =
-        QDBusConnection::addConnection(QDBusConnection::SessionBus);
-    if (!connection.isConnected())
+    if (m_private->loadPlugin())
     {
-        qWarning("QDS: no connection to D-BUS session bus");
+        DBusPlugin* (*createPlugin)(int, char**);
+
+        *(void**) (&createPlugin) = m_private->pluginLib->resolve("createPlugin");
+
+        if (createPlugin != 0)
+        {
+            m_private->plugin = (*createPlugin)(argc, argv);
+            return m_private->plugin != 0;
+        }
     }
 
-    m_private->daemon->setConnection(connection);
+    qWarning("QDS: failed to load D-BUS plugin. Continuing with built-in services");
 
-    return connection.isConnected();
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ServiceFactoryImpl::initNetwork()
 {
-    if (!m_private->daemon->canSend()) return false;
+    if (m_private->plugin == 0) return false;
 
-    return false; // TODO call daemon
+    bool (*initNetwork)(DBusPlugin*);
+
+    *(void**) (&initNetwork) = m_private->pluginLib->resolve("init");
+
+    if (initNetwork == 0) return false;
+
+    return (*initNetwork)(m_private->plugin);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ServiceFactoryImpl::initLauncher()
 {
-    if (!m_private->daemon->canSend())
+    if (m_private->pluginLib == 0)
     {
         m_private->launcher = new Launcher();
         m_private->launcher->m_impl = new MailcapLauncherImpl();
         return true;
     }
 
-    LauncherImpl* launcherImpl;
+    LauncherImpl* (*initLauncher)(DBusPlugin*);
+    *(void**) (&initLauncher) = m_private->pluginLib->resolve("initLauncher");
 
-    QDBusError error;
-    QDBusMessage reply =
-        m_private->daemon->sendWithReply("InitLauncher", QValueList<QVariant>(), &error);
-    if (error.isValid() || reply.count() < 1 || !reply[0].toBool())
+    if (initLauncher == 0) return false;
+
+    LauncherImpl* launcherImpl = (*initLauncher)(m_private->plugin);
+    if (launcherImpl == 0)
     {
-        if (error.isValid())
-        {
-            qWarning("Error while requesting launcher on D-Bus:\nerror '%s'\nmessage '%s'",
-                     error.name().local8Bit().data(), error.message().local8Bit().data());
-        }
+        qWarning("QDS: D-BUS plugin failed to create a launcher");
 
         launcherImpl = new MailcapLauncherImpl();
-    }
-    else
-    {
-        QDBusProxy* proxy = new QDBusProxy(m_private->daemon, "QDS-Launcher-Proxy");
-        proxy->setService("de.berlios.QDS");
-        proxy->setPath("/QDS/Launcher");
-        proxy->setInterface("de.berlios.qds.Launcher");
-        proxy->setConnection(m_private->daemon->connection());
-
-        launcherImpl = new DBusLauncherImpl(proxy);
     }
 
     m_private->launcher = new Launcher();
@@ -140,21 +133,43 @@ Launcher* ServiceFactoryImpl::launcher()
 ///////////////////////////////////////////////////////////////////////////////
 
 ServiceFactoryImplPrivate::ServiceFactoryImplPrivate()
-    : QObject(0),
-      daemon(0),
+    : pluginLib(0),
+      plugin(0),
       launcher(0)
 {
-    daemon = new QDBusProxy(this, "QDS-Daemon-Proxy");
-
-    daemon->setService("de.berlios.QDS");
-    daemon->setPath("/QDS");
-    daemon->setInterface("de.berlios.qds.Factory");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 ServiceFactoryImplPrivate::~ServiceFactoryImplPrivate()
 {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool ServiceFactoryImplPrivate::loadPlugin()
+{
+    QString libName = "qds-dbus";
+
+    QLibrary* lib = new QLibrary(libName);
+
+    if (!lib->load())
+    {
+        // Some Qt version do not create the full name correctly, try again
+        // using full name
+        libName = "lib" + libName + ".so";
+        delete lib;
+        lib = new QLibrary(libName);
+
+        if (!lib->load())
+        {
+            delete lib;
+            return false;
+        }
+    }
+
+    pluginLib = lib;
+    return true;
 }
 
 // End of File

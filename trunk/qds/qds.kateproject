@@ -36,7 +36,7 @@ Files=servicefactoryimpl.cpp/launcher.cpp
 
 [Dir lib/unix]
 Dirs=
-Files=launcher.cpp/servicefactoryimpl.cpp/mailcap.cpp/mailcap.h/mimetypes.cpp/mimetypes.h/mailcaplauncherimpl.cpp/mailcaplauncherimpl.h/servicefactoryimpl_p.h/dbuslauncherimpl.cpp/dbuslauncherimpl.h
+Files=launcher.cpp/servicefactoryimpl.cpp/mailcap.cpp/mailcap.h/mimetypes.cpp/mimetypes.h/mailcaplauncherimpl.cpp/mailcaplauncherimpl.h/servicefactoryimpl_p.h/dbuslauncherimpl.cpp/dbuslauncherimpl.h/dbusplugin.cpp/dbusplugin.h/dbusplugin.pro/dbusplugin_p.h
 
 [Dir lib/win32]
 Dirs=
