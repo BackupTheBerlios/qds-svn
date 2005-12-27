@@ -24,6 +24,9 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// Qt includes
+#include <qglobal.h>
+
 // QDS includes
 #include "qds/launcher.h"
 
