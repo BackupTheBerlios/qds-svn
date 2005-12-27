@@ -1,3 +1,6 @@
+Introduction
+============
+
 On Unix the access to desktop services depends on the currently available
 desktop API.
 
@@ -5,7 +8,7 @@ QDS uses D-BUS (http://www.freedesktop.org/Software/dbus) to do
 out-of-process method calls to a suitable service provider.
 
 This could be a desktop environment specific program or the
-QDS-Daemon which is part of the QDS package.
+QDS-Daemon described here
 
 The QDS-Daemon handles different desktop APIs by delegating the service 
 initialization/calls to a service plugin.
@@ -22,7 +25,7 @@ A name specified on the commandline using the commandline switch
 overrules any plugin name found in the configuration file.
 
 Possible QDS configuration file qdsrc (for users in $HOME/.qt/) specifying to
-use the KDE plugin (libqds_kde.so) if no override is given on commandline:
+use the KDE plugin (libqds-daemon_kde.so) if no override is given on commandline:
 
 [General]
 Plugin=kde
@@ -30,3 +33,41 @@ Plugin=kde
 When there is neither a name given on commandline nor a name specified in
 the configuration file, QDS will try to detect known desktop APIs before it
 falls back to built in services.
+
+D-BUS Services
+==============
+
+The D-BUS service API has the following objects:
+
+Service Registry/Factory
+------------------------
+
+Path:      /QDS
+Interface: de.berlios.qds.Factory
+
+Methods:
+    InitLauncher( boolean : out)
+        initializes the Launcher service. Creates a child object exporting the Launcher
+        interface if there isn't one yet.
+        Returns TRUE if the Launcher is now available. Returns a D-BUS Error
+        "de.berlios.qds.Error.ServiceNotAvailable" when it failes.
+
+
+Launcher Service
+----------------
+
+Path:      /QDS/Launcher
+Interface: de.berlios.qds.Launcher
+
+Methods:
+    LaunchFile( string : in, boolean : out )
+        attempts to launch a file given its filename. Returns TRUE on success
+
+    LaunchFile( string : in, string : in, boolean : out )
+        attempts to launch a file given its filename and MIME type. Returns TRUE on success
+
+    LaunchURL( string : in, boolean : out )
+        attempts to launch a file given its URL. Returns TRUE on success
+
+    LaunchURL( string : in, string : in, boolean : out )
+        attempts to launch a file given its URL and MIME type. Returns TRUE on success

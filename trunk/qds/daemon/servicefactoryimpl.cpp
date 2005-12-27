@@ -24,6 +24,9 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// system includes
+#include <dlfcn.h>
+
 // Qt includes
 #include <qlibrary.h>
 #include <qsettings.h>
@@ -129,7 +132,7 @@ bool ServiceFactoryImpl::init(int argc, char** argv)
     {
         qWarning("QDS-Daemon: cannot determine which plugin to use.\n"
                  "Continuing with standard Qt feature set");
-        return app;
+        return false;
     }
 
     qDebug("Using QDS plugin '%s'", pluginName.local8Bit().data());
@@ -138,18 +141,29 @@ bool ServiceFactoryImpl::init(int argc, char** argv)
     {
         QApplication* (*createApp)(int, char**, bool);
 
+        dlerror();
+
         *(void**) (&createApp) = m_private->pluginLib->resolve("createApplication");
 
         if (createApp != 0)
         {
             app = (*createApp)(argc, argv, false);
         }
+        else
+        {
+            qWarning("Cannot get application creator from plugin: %s", dlerror());
+        }
     }
-    else
+
+    if (app == 0)
+    {
         qDebug("Failed to load plugin '%s'. Continuing with standard Qt feature set",
                pluginName.local8Bit().data());
+        delete m_private->pluginLib;
+        m_private->pluginLib = 0;
+    }
 
-    return app;
+    return (app != 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -159,9 +173,16 @@ bool ServiceFactoryImpl::initNetwork()
     if (m_private->pluginLib == 0) return false;
 
     bool (*initNetwork)();
+
+    dlerror();
+
     *(void**) (&initNetwork) = m_private->pluginLib->resolve("initNetwork");
 
-    if (initNetwork == 0) return false;
+    if (initNetwork == 0)
+    {
+       qWarning("Cannot get network initializer from plugin: %s", dlerror());
+       return false;
+    }
 
     return (*initNetwork)();
 }
@@ -177,12 +198,23 @@ bool ServiceFactoryImpl::initLauncher()
         return true;
     }
 
+    LauncherImpl* launcherImpl = 0;
+
     LauncherImpl* (*initLauncher)();
+
+    dlerror();
+
     *(void**) (&initLauncher) = m_private->pluginLib->resolve("initLauncher");
 
-    if (initLauncher == 0) return false;
+    if (initLauncher != 0)
+    {
+        launcherImpl = (*initLauncher)();
+    }
+    else
+    {
+       qWarning("Cannot get launcher initializer from plugin: %s", dlerror());
+    }
 
-    LauncherImpl* launcherImpl = (*initLauncher)();
     if (launcherImpl == 0)
     {
         qWarning("QDS-Daemon: plugin failed to create a launcher");
@@ -208,7 +240,7 @@ Launcher* ServiceFactoryImpl::launcher()
 
 bool ServiceFactoryImplPrivate::loadPlugin(const QString& name)
 {
-    QString libName = "qds_" + name;
+    QString libName = "qds-daemon_" + name;
 
     QLibrary* lib = new QLibrary(libName);
 

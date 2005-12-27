@@ -68,7 +68,7 @@ void LauncherService::setConnection(const QDBusConnection& connection)
     {
         qDebug("Interface '%s' available at path '%s' on DBUS name '%s'",
                interface.local8Bit().data(), m_path.local8Bit().data(),
-               m_connection.baseService().local8Bit().data());
+               m_connection.uniqueName().local8Bit().data());
     }
 }
 
@@ -81,7 +81,7 @@ bool LauncherService::handleMethodCall(const QDBusMessage& message)
     bool ret;
     QDBusError error;
 
-    if (message.name() == "LaunchFile")
+    if (message.member() == "LaunchFile")
     {
         switch (message.count())
         {
@@ -106,7 +106,7 @@ bool LauncherService::handleMethodCall(const QDBusMessage& message)
                 return false;
         }
     }
-    else if (message.name() == "LaunchURL")
+    else if (message.member() == "LaunchURL")
     {
         switch (message.count())
         {

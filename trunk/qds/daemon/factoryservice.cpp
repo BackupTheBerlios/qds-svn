@@ -72,7 +72,7 @@ void FactoryService::setConnection(const QDBusConnection& connection)
     {
         qDebug("Interface '%s' available at path '%s' on DBUS name '%s'",
                interface.local8Bit().data(), m_path.local8Bit().data(),
-               m_connection.baseService().local8Bit().data());
+               m_connection.uniqueName().local8Bit().data());
     }
 
     // pass it on to sub objects
@@ -88,11 +88,11 @@ bool FactoryService::handleMethodCall(const QDBusMessage& message)
     QDBusError error;
     bool ret = false;
 
-    if (message.name() == "InitLauncher")
+    if (message.member() == "InitLauncher")
     {
         ret = initLauncher(error);
     }
-    else if (message.name() == "InitNetwork")
+    else if (message.member() == "InitNetwork")
     {
         ret = initNetwork(error);
     }
