@@ -1,6 +1,6 @@
 [Dir daemon]
 Dirs=
-Files=daemon.pro/daemon.cpp/daemon.h/main.cpp/servicefactoryimpl.cpp/factoryservice.cpp/factoryservice.h/launcherservice.cpp/launcherservice.h
+Files=daemon.pro/daemon.cpp/daemon.h/main.cpp/servicefactoryimpl.cpp/factoryservice.cpp/factoryservice.h/launcherservice.cpp/launcherservice.h/README
 
 [Dir daemon/plugins]
 Dirs=
@@ -68,7 +68,7 @@ Files=main.cpp/qdstest.pro
 
 [Project Dir]
 Dirs=include/lib/plugins/exampleapp/docs/daemon
-Files=qds.pro/AUTHORS/ChangeLog
+Files=qds.pro/AUTHORS/ChangeLog/README.unix
 
 [Project File]
 Name=QDS

@@ -1,0 +1,78 @@
+This file contains information for developers building QDS on Unix/Linux systems.
+
+The Unix implementation of QDS is split into four parts:
+
+- the static QDS library as on the other platforms
+- a shared library (D-BUS plugin) the static library will try to load
+- a service daemon that implements D-BUS services
+- desktop environment specific plugins for the service daemon
+
+
+
+Static QDS Library
+==================
+
+The main QDS library is, like on Windows and OS X, a statically linkable library
+so applications using QDS do not have runtime dependecies that would keep them
+from starting properly.
+
+However, as there is no single desktop API on Unix systems, the main library only
+contains fallback implementations for the services.
+
+The Launcher fallback is based on so called mailcap files and MIME type information
+found in special "mime.type" files.
+
+The desktop API integration is achieved through an out-of-process approach, where
+the QDS enabled application uses D-BUS (see http://www.freedesktop.org/Software/dbus)
+to communicate with a service provider.
+
+See section the next sections for details.
+
+
+D-BUS plugin
+============
+
+The D-BUS plugin is located under lib/unix/ and has its own .pro file.
+
+In order to build it you will need the D-BUS library and the Qt D-BUS bindings
+library.
+Set the environment DBUSDIR to point to the prefix where those to libraries are
+installed before running qmake (there is no harm in running qmake before, it will
+detect if the variable is not set yet)
+
+The D-BUS access is implemented as a plugin, i.e. a shared library which is loaded
+at runtime, to avoid build or startup dependencies for QDS applications.
+
+However, the disadvantage is that the full potential of QDS is only available if the
+plugin can be loaded successfully and it is able to establish a connection to a
+service provider on the D-BUS session bus.
+
+
+Service Daemon
+==============
+
+The D-BUS plugin is located under daemon/ and has its own .pro file.
+
+In order to build it you will need the D-BUS library and the Qt D-BUS bindings
+library.
+Set the environment DBUSDIR to point to the prefix where those to libraries are
+installed before running qmake (there is no harm in running qmake before, it will
+detect if the variable is not set yet)
+
+The Daemon uses the in-process integration plugins that were used in earlier
+versions of the main library. See the plugin/kde and plugin/gnome directories for
+plugins and daemon/README for details on plugin loading.
+
+As described in the above section about the D-BUS plugin, the QDS daemon exports
+its service functionality through D-BUS interfaces.
+
+Service Daemon Plugins
+======================
+
+The service daemon plugins are located under plugins/ and have their own build systems
+and require their respective desktop APIs development files to build.
+
+The QNetwork integration part of the KDE plugin is currently not exported over D-BUS
+so the functionality is at the moment basically restricted to the Launcher.
+
+See daemon/README for details on plugin loading

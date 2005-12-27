@@ -1,3 +1,13 @@
+2005-12-27 krake:
+    * Added dlerror() to output when loading/resolving plugin symbols fails
+
+2005-12-24 krake:
+    * Changed the plugin library names to libqds-daemon_name to avoid loading any
+      installed client plugin of earlier versions
+    * Fixed a symbol visibility problem in the KDE plugin
+    * Added documentation in the form of README.unix and service descriptions in
+      daemon/README
+
 2005-12-21 krake:
     * Implemented the D-BUS access as a plugin (dlopen) to make Unix lib a static lib
       again while still not requiring the application to link against D-BUS libs
