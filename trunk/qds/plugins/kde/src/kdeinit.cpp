@@ -11,6 +11,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // KDE includes
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -32,11 +36,11 @@ static const KCmdLineOptions options[] =
     KCmdLineLastOption
 };
 
-QApplication* createApplication(int argc, char** argv, bool useGUI)
+KDE_EXPORT QApplication* createApplication(int argc, char** argv, bool useGUI)
 {
     KCmdLineArgs::init(argc, argv, argv[0], argv[0], "QDS Plugin for KDE", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
-    
+
     QApplication* app = new KApplication(useGUI, useGUI);
 
     // EVIL HACK
@@ -46,13 +50,13 @@ QApplication* createApplication(int argc, char** argv, bool useGUI)
     {
         qApp->argv()[1] = (char*)args->arg(0);
     }
-    
+
     return app;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool initNetwork()
+KDE_EXPORT bool initNetwork()
 {
     // check if KDE protocols have at least FILE, HTTP, FTP
     QStringList protocols = KProtocolInfo::protocols();
@@ -74,7 +78,7 @@ bool initNetwork()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-LauncherImpl* initLauncher()
+KDE_EXPORT LauncherImpl* initLauncher()
 {
     kdDebug() << "Initializing KRun based launcher" << endl;
     return new KLauncherImpl();

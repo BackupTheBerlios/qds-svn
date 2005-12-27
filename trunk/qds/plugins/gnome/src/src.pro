@@ -4,7 +4,7 @@ CONFIG += qt thread debug warn_on
 
 OBJECTS_DIR = .obj
 
-TARGET = qds_gnome
+TARGET = qds-daemon_gnome
 VERSION = 0.1.0
 
 HEADERS += gnomevfslauncherimpl.h
