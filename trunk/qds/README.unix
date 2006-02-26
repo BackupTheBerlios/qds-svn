@@ -34,11 +34,10 @@ D-BUS plugin
 
 The D-BUS plugin is located under lib/unix/ and has its own .pro file.
 
-In order to build it you will need the D-BUS library and the Qt D-BUS bindings
+In order to build it you will need the D-BUS library and the Qt3 D-BUS bindings
 library.
-Set the environment DBUSDIR to point to the prefix where those to libraries are
-installed before running qmake (there is no harm in running qmake before, it will
-detect if the variable is not set yet)
+qmake will try to evaluate the correct include and library settings using
+pkg-config. The pkg-config name of the bindings is dbus-1-qt3
 
 The D-BUS access is implemented as a plugin, i.e. a shared library which is loaded
 at runtime, to avoid build or startup dependencies for QDS applications.
@@ -53,11 +52,10 @@ Service Daemon
 
 The D-BUS plugin is located under daemon/ and has its own .pro file.
 
-In order to build it you will need the D-BUS library and the Qt D-BUS bindings
+In order to build it you will need the D-BUS library and the Qt3 D-BUS bindings
 library.
-Set the environment DBUSDIR to point to the prefix where those to libraries are
-installed before running qmake (there is no harm in running qmake before, it will
-detect if the variable is not set yet)
+qmake will try to evaluate the correct include and library settings using
+pkg-config. The pkg-config name of the bindings is dbus-1-qt3
 
 The Daemon uses the in-process integration plugins that were used in earlier
 versions of the main library. See the plugin/kde and plugin/gnome directories for

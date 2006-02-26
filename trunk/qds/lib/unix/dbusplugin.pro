@@ -15,12 +15,7 @@ VERSION   = 0.1.0
 
 INCLUDEPATH += ../../include ../../
 
-DBUSDIR = $$(DBUSDIR)
-isEmpty(DBUSDIR) {
-    error( Please set DBUSDIR to your D-BUS installation prefix )
-}
-
-INCLUDEPATH += $(DBUSDIR)/include/dbus-1.0/qt3 $(DBUSDIR)/include/dbus-1.0
-
-LIBS += -L$(DBUSDIR)/lib -ldbus-qt3-1 -ldbus-1
-
+QDBUS_CXXFLAGS = $$system(pkg-config --cflags dbus-1-qt3)
+QMAKE_CXXFLAGS_DEBUG += $$QDBUS_CXXFLAGS
+QMAKE_CXXFLAGS_RELEASE += $$QDBUS_CXXFLAGS
+LIBS += $$system(pkg-config --libs dbus-1-qt3)

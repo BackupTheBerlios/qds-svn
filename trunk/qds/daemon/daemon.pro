@@ -4,11 +4,6 @@ TARGET = qds-daemon
 
 CONFIG += qt thread warn_on debug
 
-DBUSDIR = $$(DBUSDIR)
-isEmpty(DBUSDIR) {
-    error( Please set DBUSDIR to your D-BUS installation prefix )
-}
-
 SOURCES = main.cpp daemon.cpp \
           factoryservice.cpp \
           launcherservice.cpp \
@@ -17,10 +12,13 @@ SOURCES = main.cpp daemon.cpp \
 HEADERS = daemon.h factoryservice.h launcherservice.h \
 
 LIBS += -L../lib -lqds
-LIBS += -L$(DBUSDIR)/lib -ldbus-qt3-1 -ldbus-1
 
 INCLUDEPATH += ../include ../lib ../
-INCLUDEPATH += $(DBUSDIR)/include/dbus-1.0/qt3
+
+QDBUS_CXXFLAGS = $$system(pkg-config --cflags dbus-1-qt3)
+QMAKE_CXXFLAGS_DEBUG += $$QDBUS_CXXFLAGS
+QMAKE_CXXFLAGS_RELEASE += $$QDBUS_CXXFLAGS
+LIBS += $$system(pkg-config --libs dbus-1-qt3)
 
 OBJECTS_DIR = .obj
 MOC_DIR     = .moc
